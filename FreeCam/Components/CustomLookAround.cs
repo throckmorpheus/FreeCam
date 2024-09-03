@@ -23,7 +23,7 @@ public class CustomLookAround : MonoBehaviour
             return;
         }
 
-        var scrollInOut = Mouse.current.scroll.y.ReadValue();
+        var scrollInOut = Mouse.current.scroll.y.ReadValue() + InputLibrary.toolOptionUp.GetValue() - InputLibrary.toolOptionDown.GetValue();
         _moveSpeed = Math.Max(_moveSpeed + scrollInOut * 0.05f, 0f);
 
         if (Keyboard.current[Key.DownArrow].wasPressedThisFrame)
@@ -41,8 +41,14 @@ public class CustomLookAround : MonoBehaviour
 
         _moveY = OWInput.GetValue(InputLibrary.thrustUp) - OWInput.GetValue(InputLibrary.thrustDown);
 
-        transform.Rotate(Vector3.up, _degreesX);
+        if (OWInput.IsPressed(InputLibrary.rollMode)) {
+            transform.Rotate(Vector3.forward, -_degreesX);
+        }
+        else {
+            transform.Rotate(Vector3.up, _degreesX);
+        }
         transform.Rotate(Vector3.right, -_degreesY);
+
         transform.position += _moveZ * (transform.forward * 0.02f * _moveSpeed);
         transform.position += _moveX * (transform.right * 0.02f * _moveSpeed);
         transform.position += _moveY * (transform.up * 0.02f * _moveSpeed);
