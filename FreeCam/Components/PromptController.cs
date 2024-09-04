@@ -7,7 +7,7 @@ namespace FreeCam.Components;
 
 public class PromptController : MonoBehaviour
 {
-    private ScreenPrompt _togglePrompt, _guiPrompt, _teleportOptions, _scrollPrompt, _rotatePrompt, _horizontalPrompt, _verticalPrompt;
+    private ScreenPrompt _togglePrompt, _guiPrompt, _teleportOptions, _scrollPrompt, _scrollSpeedPrompt, _rotatePrompt, _horizontalPrompt, _verticalPrompt;
     private ScreenPrompt _centerPrompt;
     private List<ScreenPrompt> _planetPrompts;
 
@@ -16,6 +16,7 @@ public class PromptController : MonoBehaviour
     private ScreenPrompt _flashlightPrompt, _flashlightRangePrompt, _flashlightSpeedPrompt;
 
     private CustomFlashlight _customFlashlight;
+    private CustomLookAround _customLookAround;
 
     private static readonly UIInputCommands _rotateLeftCmd = new("FREECAM - RotateLeft", KeyCode.Q);
     private static readonly UIInputCommands _rotateRightCmd = new("FREECAM - RotateRight", KeyCode.E);
@@ -27,6 +28,7 @@ public class PromptController : MonoBehaviour
     private void Start()
     {
         _customFlashlight = GetComponent<CustomFlashlight>();
+        _customLookAround = GetComponent<CustomLookAround>();
 
         // Top right
         _togglePrompt = AddPrompt("Toggle FreeCam", PromptPosition.UpperLeft, FreeCamController.ToggleKey);
@@ -34,6 +36,9 @@ public class PromptController : MonoBehaviour
 
         _scrollPrompt = new ScreenPrompt(_scrollCmd, _resetCmd, "Movement speed   <CMD1> Reset   <CMD2>", ScreenPrompt.MultiCommandType.CUSTOM_BOTH);
         Locator.GetPromptManager().AddScreenPrompt(_scrollPrompt, PromptPosition.UpperLeft, false);
+
+        _scrollSpeedPrompt = new ScreenPrompt("Move Speed: " + _customLookAround.MoveSpeed + " m/s");
+        Locator.GetPromptManager().AddScreenPrompt(_scrollSpeedPrompt, PromptPosition.UpperLeft, false);
 
         _horizontalPrompt = new ScreenPrompt(InputLibrary.moveXZ, "Move   <CMD>");
         Locator.GetPromptManager().AddScreenPrompt(_horizontalPrompt, PromptPosition.UpperLeft, false);
@@ -80,6 +85,8 @@ public class PromptController : MonoBehaviour
 
         _guiPrompt.SetVisibility(visible && MainClass.InFreeCam);
         _scrollPrompt.SetVisibility(visible && MainClass.InFreeCam);
+        _scrollSpeedPrompt.SetVisibility(visible && MainClass.InFreeCam);
+        _scrollSpeedPrompt.SetText("Move Speed: " + _customLookAround.MoveSpeed + " m/s");
         _horizontalPrompt.SetVisibility(visible && MainClass.InFreeCam);
         _verticalPrompt.SetVisibility(visible && MainClass.InFreeCam);
         _rotatePrompt.SetVisibility(visible && MainClass.InFreeCam);
