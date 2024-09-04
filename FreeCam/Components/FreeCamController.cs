@@ -80,5 +80,9 @@ public class FreeCamController : MonoBehaviour
         {
             MainClass.ToggleFreeCam();
         }
+
+        if (Keyboard.current[Key.UpArrow].wasPressedThisFrame) {
+            MainClass.TogglePlayerCanMoveInFreeCam();
+        }
     }
 }

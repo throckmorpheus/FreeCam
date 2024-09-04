@@ -11,9 +11,17 @@ internal static class MapControllerPatches
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(MapController.EnterMapView))]
-    public static void MapController_EnterMapView() => _oldInputMode = OWInput.GetInputMode();
+    public static void MapController_EnterMapView()
+    {
+        _oldInputMode = OWInput.GetInputMode();
+        MainClass.OnEnterMap();
+    }
 
     [HarmonyPostfix]
     [HarmonyPatch(nameof(MapController.ExitMapView))]
-    public static void MapController_ExitMapView() => OWInput.ChangeInputMode(_oldInputMode);
+    public static void MapController_ExitMapView()
+    {
+        OWInput.ChangeInputMode(_oldInputMode);
+        MainClass.OnExitMap();
+    }
 }

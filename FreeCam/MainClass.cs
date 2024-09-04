@@ -17,6 +17,7 @@ class MainClass : ModBehaviour
 
 	public static bool InFreeCam { get; private set; }
 	public static bool ShowPrompts { get; private set; }
+	public static bool PlayerCanMoveInFreeCam { get; private set; }
 
 	private InputMode _storedMode;
 	private int _fov;
@@ -79,6 +80,7 @@ class MainClass : ModBehaviour
 		if (scene.name != "SolarSystem" && scene.name != "EyeOfTheUniverse") return;
 
 		InFreeCam = false;
+		PlayerCanMoveInFreeCam = false;
 
 		(_owCamera, _camera) = _commonCameraAPI.CreateCustomCamera("FREECAM", (OWCamera cam) =>
 		{
@@ -107,13 +109,17 @@ class MainClass : ModBehaviour
 			{
 				_storedMode = InputMode.Character;
 			}
-			OWInput.ChangeInputMode(_storedMode);
+			if (!PlayerCanMoveInFreeCam) {
+				OWInput.ChangeInputMode(_storedMode);
+			}
 		}
 		else if (!InFreeCam && camera == _owCamera)
 		{
 			InFreeCam = true;
 			_storedMode = OWInput.GetInputMode();
-			OWInput.ChangeInputMode(InputMode.None);
+			if (!PlayerCanMoveInFreeCam) {
+				OWInput.ChangeInputMode(InputMode.None);
+			}
 		}
 	}
 
@@ -144,6 +150,32 @@ class MainClass : ModBehaviour
 		if (!GUIMode.IsHiddenMode() && InFreeCam)
 		{
 			_instance._hud.SetActive(false);
+		}
+	}
+
+	public static void TogglePlayerCanMoveInFreeCam()
+	{
+		PlayerCanMoveInFreeCam = !PlayerCanMoveInFreeCam;
+		if (InFreeCam && !PlayerCanMoveInFreeCam) {
+			_instance._storedMode = OWInput.GetInputMode();
+			OWInput.ChangeInputMode(InputMode.None);
+		}
+		else if (InFreeCam && PlayerCanMoveInFreeCam) {
+			OWInput.ChangeInputMode(_instance._storedMode);
+		}
+	}
+
+	public static void OnEnterMap()
+	{
+		if (InFreeCam) {
+			_instance._commonCameraAPI.ExitCamera(_instance._owCamera);
+		}
+	}
+
+	public static void OnExitMap()
+	{
+		if (InFreeCam) {
+			_instance._commonCameraAPI.EnterCamera(_instance._owCamera);
 		}
 	}
 
