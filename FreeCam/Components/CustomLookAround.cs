@@ -38,7 +38,8 @@ public class CustomLookAround : MonoBehaviour
 
         var lookRate = OWInput.UsingGamepad() ? PlayerCameraController.GAMEPAD_LOOK_RATE_Y : PlayerCameraController.LOOK_RATE;
         
-        var look = InputLibrary.look.GetAxisValue(true);
+        // Possibly this should use the ship input version? Since the freecam controls are more like flight
+        var look = OWInput.GetAxisValue(InputLibrary.look, InputMode.All);
         _degreesY = look.y * lookRate * Time.unscaledDeltaTime;
         _degreesX = look.x * lookRate * Time.unscaledDeltaTime;
 
